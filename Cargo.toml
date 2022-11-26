@@ -1,0 +1,7 @@
+[workspace]
+members = [ "cmd", "interface", "usecase", "domain", "infra", "di", "config" ]
+
+[workspace.package]
+version = "0.1.0"
+authors = ["Teruki Tada"]
+edition = "2021"
