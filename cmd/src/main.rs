@@ -31,6 +31,7 @@ async fn main() {
     let app = Router::new()
         .route("/", get(handler::check_health::check_health))
         .route("/article", post(handler::post_article::post_article))
+        .route("/article", get(handler::read_article::read_article))
         .layer(Extension(article_provider));
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));

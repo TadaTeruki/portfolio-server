@@ -8,12 +8,12 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn init() -> Result<Box<Self>, Box<dyn Error>> {
+    pub fn init() -> Result<Self, Box<dyn Error>> {
         let config = Config {
             credentials_src: env::var(FIRESTORE_CREDENTIALS_SOURCE_KEY)?,
         };
 
-        Ok(Box::new(config))
+        Ok(config)
     }
 
     pub fn get_credentials_src(&self) -> &str {

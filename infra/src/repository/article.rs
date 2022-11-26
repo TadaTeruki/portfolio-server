@@ -1,4 +1,7 @@
-use domain::{model::article::PostArticle, repository::article::ArticleRepository};
+use domain::{
+    model::article::{GetArticle, PostArticle},
+    repository::article::ArticleRepository,
+};
 use firestore_db_and_auth::{documents, Credentials, ServiceSession};
 use std::error::Error;
 
@@ -16,15 +19,23 @@ impl ArticleDBRepository {
 }
 
 impl ArticleRepository for ArticleDBRepository {
-    fn insert(&self, article: PostArticle) -> Result<(), Box<dyn Error>> {
+    fn insert(&self, article: PostArticle) -> Result<String, Box<dyn Error>> {
+        let id = article.allocate_new_uuid();
+        let res = id.clone();
+
         documents::write(
             &self.fs,
             "articles",
-            Some(article.allocate_new_uuid()),
+            Some(id),
             &article,
             documents::WriteOptions::default(),
         )?;
 
-        Ok(())
+        Ok(res)
+    }
+
+    fn get(&self, id: &str) -> Result<GetArticle, Box<dyn Error>> {
+        let article = documents::read(&self.fs, "articles", id)?;
+        Ok(article)
     }
 }

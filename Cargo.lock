@@ -661,6 +661,7 @@ dependencies = [
  "di",
  "hyper 0.14.23",
  "serde",
+ "serde_json",
  "usecase",
 ]
 

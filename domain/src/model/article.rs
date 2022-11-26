@@ -1,5 +1,5 @@
 use chrono::Utc;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 fn get_utctime() -> String {
@@ -31,4 +31,14 @@ impl PostArticle {
     pub fn allocate_new_uuid(&self) -> String {
         Uuid::new_v4().to_hyphenated().to_string()
     }
+}
+
+#[derive(Deserialize)]
+pub struct GetArticle {
+    pub title: String,
+    pub subtitle: String,
+    pub body: String,
+    pub tags: Vec<String>,
+    pub time_publish: String,
+    pub time_updated: String,
 }
