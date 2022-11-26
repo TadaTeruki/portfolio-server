@@ -1,5 +1,5 @@
 use domain::{
-    model::article::{GetArticle, PostArticle},
+    model::article::{GetArticle, PostArticle, PutArticle},
     repository::article::ArticleRepository,
 };
 use firestore_db_and_auth::{documents, Credentials, ServiceSession};
@@ -34,8 +34,25 @@ impl ArticleRepository for ArticleDBRepository {
         Ok(res)
     }
 
+    fn put(&self, id: &str, article: PutArticle) -> Result<(), Box<dyn Error>> {
+        documents::write(
+            &self.fs,
+            "articles",
+            Some(id),
+            &article,
+            documents::WriteOptions { merge: true },
+        )?;
+
+        Ok(())
+    }
+
     fn get(&self, id: &str) -> Result<GetArticle, Box<dyn Error>> {
         let article = documents::read(&self.fs, "articles", id)?;
         Ok(article)
+    }
+
+    fn delete(&self, id: &str) -> Result<(), Box<dyn Error>> {
+        documents::delete(&self.fs, &("articles/".to_owned() + id), false)?;
+        Ok(())
     }
 }

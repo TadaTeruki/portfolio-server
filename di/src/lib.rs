@@ -2,7 +2,10 @@ use config::Config;
 use firestore_db_and_auth::Credentials;
 use infra::repository::article::ArticleDBRepository;
 use std::error::Error;
-use usecase::article::{post_article::PostArticleUseCase, read_article::ReadArticleUseCase};
+use usecase::article::{
+    delete_article::DeleteArticleUseCase, post_article::PostArticleUseCase,
+    read_article::ReadArticleUseCase, update_article::UpdateArticleUseCase,
+};
 
 pub struct DiContainer {
     credentials: Credentials,
@@ -25,6 +28,20 @@ impl DiContainer {
 
     pub fn usecase_read_article(&self) -> Result<ReadArticleUseCase, Box<dyn Error>> {
         let usecase = ReadArticleUseCase::new(Box::new(ArticleDBRepository::new(
+            self.credentials.clone(),
+        )?));
+        Ok(usecase)
+    }
+
+    pub fn usecase_delete_article(&self) -> Result<DeleteArticleUseCase, Box<dyn Error>> {
+        let usecase = DeleteArticleUseCase::new(Box::new(ArticleDBRepository::new(
+            self.credentials.clone(),
+        )?));
+        Ok(usecase)
+    }
+
+    pub fn usecase_update_article(&self) -> Result<UpdateArticleUseCase, Box<dyn Error>> {
+        let usecase = UpdateArticleUseCase::new(Box::new(ArticleDBRepository::new(
             self.credentials.clone(),
         )?));
         Ok(usecase)

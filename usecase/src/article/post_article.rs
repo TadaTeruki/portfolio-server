@@ -18,8 +18,9 @@ impl PostArticleUseCase {
         subtitle: String,
         body: String,
         tags: Vec<String>,
+        is_public: bool,
     ) -> Result<String, Box<dyn Error>> {
         self.repository
-            .insert(PostArticle::new(title, subtitle, body, tags))
+            .insert(PostArticle::new(title, subtitle, body, tags, is_public))
     }
 }
