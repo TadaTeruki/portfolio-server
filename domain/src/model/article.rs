@@ -37,17 +37,6 @@ impl PostArticle {
     }
 }
 
-#[derive(Deserialize)]
-pub struct GetArticle {
-    pub title: String,
-    pub subtitle: String,
-    pub body: String,
-    pub tags: Vec<String>,
-    pub is_public: bool,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: Option<DateTime<Utc>>,
-}
-
 #[derive(Serialize, Deserialize)]
 pub struct PutArticle {
     pub title: String,
@@ -75,4 +64,24 @@ impl PutArticle {
             updated_at: Some(Utc::now()),
         }
     }
+}
+
+#[derive(Deserialize)]
+pub struct GetArticle {
+    pub title: String,
+    pub subtitle: String,
+    pub body: String,
+    pub tags: Vec<String>,
+    pub is_public: bool,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: Option<DateTime<Utc>>,
+}
+
+#[derive(Deserialize)]
+pub struct ListArticle {
+    pub title: String,
+    pub subtitle: String,
+    pub is_public: bool,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: Option<DateTime<Utc>>,
 }

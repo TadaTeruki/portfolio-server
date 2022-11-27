@@ -34,6 +34,7 @@ async fn main() {
         .route("/article", get(handler::read_article::read_article))
         .route("/article", delete(handler::delete_article::delete_article))
         .route("/article", put(handler::update_article::update_article))
+        .route("/articles", get(handler::list_article::list_article))
         .layer(Extension(article_provider));
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));

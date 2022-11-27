@@ -795,6 +795,7 @@ dependencies = [
  "async-trait",
  "domain",
  "firestore",
+ "futures",
 ]
 
 [[package]]

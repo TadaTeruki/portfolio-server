@@ -10,3 +10,4 @@ edition.workspace = true
 domain = {path = "../domain"}
 firestore = "0.18.3"
 async-trait = "0.1.58"
+futures = "0.3.25"

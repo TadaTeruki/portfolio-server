@@ -1,9 +1,11 @@
 use async_trait::async_trait;
 use domain::{
-    model::article::{GetArticle, PostArticle, PutArticle},
+    model::article::{GetArticle, ListArticle, PostArticle, PutArticle},
     repository::article::ArticleRepository,
 };
-use firestore::*;
+use firestore::{path, paths, struct_path, FirestoreDb, FirestoreQueryDirection};
+use futures::stream::BoxStream;
+use futures::StreamExt;
 use std::error::Error;
 
 pub struct ArticleDBRepository {
@@ -84,5 +86,46 @@ impl ArticleRepository for ArticleDBRepository {
             .execute()
             .await?;
         Ok(())
+    }
+
+    async fn list(&self) -> Result<Vec<ListArticle>, Box<dyn Error + Send + Sync + 'static>> {
+        let stream: BoxStream<ListArticle> = self
+            .db
+            .fluent()
+            .select()
+            .fields(paths!(ListArticle::{title, subtitle, is_public, created_at, updated_at}))
+            .from("articles")
+            .order_by([(
+                path!(ListArticle::created_at),
+                FirestoreQueryDirection::Descending,
+            )])
+            .obj()
+            .stream_query()
+            .await?;
+
+        let list: Vec<ListArticle> = stream.collect().await;
+        Ok(list)
+    }
+
+    async fn list_public(
+        &self,
+    ) -> Result<Vec<ListArticle>, Box<dyn Error + Send + Sync + 'static>> {
+        let stream: BoxStream<ListArticle> = self
+            .db
+            .fluent()
+            .select()
+            .fields(paths!(ListArticle::{title, subtitle, is_public, created_at, updated_at}))
+            .from("articles")
+            .filter(|q| q.for_all([q.field(path!(ListArticle::is_public)).eq(true)]))
+            .order_by([(
+                path!(ListArticle::created_at),
+                FirestoreQueryDirection::Descending,
+            )])
+            .obj()
+            .stream_query()
+            .await?;
+
+        let list: Vec<ListArticle> = stream.collect().await;
+        Ok(list)
     }
 }
