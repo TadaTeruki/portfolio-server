@@ -1,11 +1,11 @@
-use domain::{model::article::PostArticle, repository::article::ArticleRepository};
+use domain::{model::article::PutArticle, repository::article::ArticleRepository};
 use std::error::Error;
 
-pub struct PostArticleUseCase {
+pub struct UpdateArticleUseCase {
     repository: Box<dyn ArticleRepository + Send + Sync>,
 }
 
-impl PostArticleUseCase {
+impl UpdateArticleUseCase {
     pub fn new(repository_: Box<dyn ArticleRepository + Send + Sync>) -> Self {
         Self {
             repository: repository_,
@@ -14,16 +14,16 @@ impl PostArticleUseCase {
 
     pub async fn execute(
         &self,
+        id: String,
         title: String,
         subtitle: String,
         body: String,
         tags: Vec<String>,
         is_public: bool,
-    ) -> Result<String, Box<dyn Error + Send + Sync + 'static>> {
-        let res = self
-            .repository
-            .insert(PostArticle::new(title, subtitle, body, tags, is_public))
+    ) -> Result<(), Box<dyn Error + Send + Sync + 'static>> {
+        self.repository
+            .put(&id, PutArticle::new(title, subtitle, body, tags, is_public))
             .await?;
-        Ok(res)
+        Ok(())
     }
 }

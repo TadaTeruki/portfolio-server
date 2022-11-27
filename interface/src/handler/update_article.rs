@@ -1,12 +1,14 @@
 use crate::api_error::ApiError;
-use axum::{http::StatusCode, Extension, Json};
+use axum::{Extension, Json};
 use axum_macros::debug_handler;
 use di::DiContainer;
-use serde::{Deserialize, Serialize};
+use hyper::StatusCode;
+use serde::Deserialize;
 use std::sync::Arc;
 
 #[derive(Deserialize)]
-pub struct PostArticleRequest {
+pub struct UpdateArticleRequest {
+    id: String,
     title: String,
     subtitle: String,
     body: String,
@@ -14,19 +16,15 @@ pub struct PostArticleRequest {
     is_public: bool,
 }
 
-#[derive(Serialize)]
-pub struct PostArticleResponse {
-    id: String,
-}
-
 #[debug_handler]
-pub async fn post_article(
-    Json(payload): Json<PostArticleRequest>,
+pub async fn update_article(
+    Json(payload): Json<UpdateArticleRequest>,
     Extension(container): Extension<Arc<DiContainer>>,
-) -> Result<Json<PostArticleResponse>, ApiError> {
-    let usecase = container.usecase_post_article();
+) -> Result<StatusCode, ApiError> {
+    let usecase = container.usecase_update_article();
 
     let res = usecase.execute(
+        payload.id,
         payload.title,
         payload.subtitle,
         payload.body,
@@ -35,7 +33,7 @@ pub async fn post_article(
     );
 
     match res.await {
-        Ok(id_) => Ok(Json(PostArticleResponse { id: id_ })),
+        Ok(_) => Ok(StatusCode::OK),
         Err(_) => Err(ApiError {
             status: StatusCode::BAD_REQUEST,
             description: String::from("bad request"),

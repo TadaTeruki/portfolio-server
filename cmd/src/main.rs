@@ -1,5 +1,5 @@
 use axum::{
-    routing::{get, post},
+    routing::{delete, get, post, put},
     Extension, Router,
 };
 use config::Config;
@@ -20,7 +20,7 @@ async fn main() {
         }
     };
 
-    let article_provider = Arc::new(match DiContainer::new(config) {
+    let article_provider = Arc::new(match DiContainer::new(config).await {
         Ok(cont) => cont,
         Err(err) => {
             error!("server aborted: {}", err);
@@ -31,6 +31,9 @@ async fn main() {
     let app = Router::new()
         .route("/", get(handler::check_health::check_health))
         .route("/article", post(handler::post_article::post_article))
+        .route("/article", get(handler::read_article::read_article))
+        .route("/article", delete(handler::delete_article::delete_article))
+        .route("/article", put(handler::update_article::update_article))
         .layer(Extension(article_provider));
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));

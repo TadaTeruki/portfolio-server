@@ -1,0 +1,125 @@
+openapi: 3.0.2
+
+info:
+  title: portforlo-server
+  version: 0.1.0
+
+servers:
+  - url: http://localhost:3000
+
+tags:
+    - name: auth
+    - name: article
+      description: 記事を管理するAPI
+
+paths:
+  /:
+    get:
+      tags:
+        - article
+      summary: 接続を確認する
+      responses:
+        '200':
+          description: OK
+  /article:
+    post:
+      tags:
+        - article
+      summary: 記事を投稿する
+      requestBody:
+        description: Request Body
+        content:
+          application/json: 
+            schema:
+              $ref: '#/components/schemas/PostArticle'
+        required: true
+      responses:
+        '200':
+          description: OK
+    get:
+      tags:
+        - article
+      summary: 記事を1つ取得する
+      requestBody:
+        description: Request Body
+        content:
+          application/json: 
+            schema:
+              $ref: '#/components/schemas/ReadArticle'
+        required: true
+      responses:
+        '200':
+          description: OK
+    delete:
+      tags:
+        - article
+      summary: 記事を削除する
+      requestBody:
+        description: Request Body
+        content:
+          application/json: 
+            schema:
+              $ref: '#/components/schemas/DeleteArticle'
+        required: true
+      responses:
+        '200':
+          description: OK
+    put:
+      tags:
+        - article
+      summary: 記事を更新する
+      requestBody:
+        description: Request Body
+        content:
+          application/json: 
+            schema:
+              $ref: '#/components/schemas/UpdateArticle'
+        required: true
+      responses:
+        '200':
+          description: OK
+
+components:
+  schemas:
+    PostArticle:
+      type: object
+      properties:
+        title:
+          type: string
+        subtitle:
+          type: string
+        body:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        is_public:
+          type: boolean
+    ReadArticle:
+      type: object
+      properties:
+        id:
+          type: string
+    DeleteArticle:
+      type: object
+      properties:
+        id:
+          type: string
+    UpdateArticle:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        subtitle:
+          type: string
+        body:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        is_public:
+          type: boolean

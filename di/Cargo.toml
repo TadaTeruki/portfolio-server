@@ -10,4 +10,4 @@ edition.workspace = true
 infra = {path = "../infra"}
 usecase = {path = "../usecase"}
 config = {path = "../config"}
-firestore-db-and-auth = "0.6.1"
+firestore = "0.18"
