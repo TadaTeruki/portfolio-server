@@ -1,5 +1,7 @@
 use crate::api_error::ApiError;
 use axum::{Extension, Json};
+use axum_macros::debug_handler;
+use chrono::{DateTime, Utc};
 use di::DiContainer;
 use hyper::StatusCode;
 use serde::{Deserialize, Serialize};
@@ -17,39 +19,38 @@ pub struct ReadArticleResponse {
     subtitle: String,
     body: String,
     tags: Vec<String>,
-    time_publish: String,
-    time_updated: String,
+    created_at: DateTime<Utc>,
+    updated_at: Option<DateTime<Utc>>,
 }
 
+#[debug_handler]
 pub async fn read_article(
-    Json(request): Json<ReadArticleRequest>,
+    Json(payload): Json<ReadArticleRequest>,
     Extension(container): Extension<Arc<DiContainer>>,
 ) -> Result<Json<ReadArticleResponse>, ApiError> {
-    let usecase = match container.usecase_read_article() {
-        Ok(u) => u,
-        Err(_) => {
-            return Err(ApiError {
-                status: StatusCode::INTERNAL_SERVER_ERROR,
-                description: String::from("internal_server_error"),
-            });
-        }
-    };
+    let usecase = container.usecase_read_article();
 
-    let res = usecase.execute(&request.id);
+    let res = usecase.execute(&payload.id);
 
-    match res {
-        Ok(article) => Ok(Json(ReadArticleResponse {
-            id: request.id,
-            title: article.title,
-            subtitle: article.subtitle,
-            body: article.body,
-            tags: article.tags,
-            time_publish: article.time_publish,
-            time_updated: article.time_updated,
-        })),
+    match res.await {
+        Ok(article_opt) => match article_opt {
+            Some(article) => Ok(Json(ReadArticleResponse {
+                id: payload.id,
+                title: article.title,
+                subtitle: article.subtitle,
+                body: article.body,
+                tags: article.tags,
+                created_at: article.created_at,
+                updated_at: article.updated_at,
+            })),
+            None => Err(ApiError {
+                status: StatusCode::NOT_FOUND,
+                description: String::from("article not found"),
+            }),
+        },
         Err(_) => Err(ApiError {
             status: StatusCode::BAD_REQUEST,
-            description: String::from("article not found"),
+            description: String::from("bad request"),
         }),
     }
 }

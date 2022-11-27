@@ -10,3 +10,4 @@ edition.workspace = true
 uuid = { version = "0.8.1", features = ["v4"] }
 serde = "1.0"
 chrono = "0.4.23"
+async-trait = "0.1.58"

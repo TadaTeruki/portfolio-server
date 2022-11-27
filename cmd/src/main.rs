@@ -20,7 +20,7 @@ async fn main() {
         }
     };
 
-    let article_provider = Arc::new(match DiContainer::new(config) {
+    let article_provider = Arc::new(match DiContainer::new(config).await {
         Ok(cont) => cont,
         Err(err) => {
             error!("server aborted: {}", err);

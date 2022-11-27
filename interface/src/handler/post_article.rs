@@ -1,7 +1,7 @@
 use crate::api_error::ApiError;
-use axum::{Extension, Json};
+use axum::{http::StatusCode, Extension, Json};
+use axum_macros::debug_handler;
 use di::DiContainer;
-use hyper::StatusCode;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
@@ -19,29 +19,22 @@ pub struct PostArticleResponse {
     id: String,
 }
 
+#[debug_handler]
 pub async fn post_article(
-    Json(request): Json<PostArticleRequest>,
+    Json(payload): Json<PostArticleRequest>,
     Extension(container): Extension<Arc<DiContainer>>,
 ) -> Result<Json<PostArticleResponse>, ApiError> {
-    let usecase = match container.usecase_post_article() {
-        Ok(u) => u,
-        Err(_) => {
-            return Err(ApiError {
-                status: StatusCode::INTERNAL_SERVER_ERROR,
-                description: String::from("internal_server_error"),
-            });
-        }
-    };
+    let usecase = container.usecase_post_article();
 
     let res = usecase.execute(
-        request.title,
-        request.subtitle,
-        request.body,
-        request.tags,
-        request.is_public,
+        payload.title,
+        payload.subtitle,
+        payload.body,
+        payload.tags,
+        payload.is_public,
     );
 
-    match res {
+    match res.await {
         Ok(id_) => Ok(Json(PostArticleResponse { id: id_ })),
         Err(_) => Err(ApiError {
             status: StatusCode::BAD_REQUEST,

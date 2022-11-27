@@ -1,5 +1,6 @@
 use crate::api_error::ApiError;
 use axum::{Extension, Json};
+use axum_macros::debug_handler;
 use di::DiContainer;
 use hyper::StatusCode;
 use serde::Deserialize;
@@ -10,23 +11,16 @@ pub struct DeleteArticleRequest {
     id: String,
 }
 
+#[debug_handler]
 pub async fn delete_article(
-    Json(request): Json<DeleteArticleRequest>,
+    Json(payload): Json<DeleteArticleRequest>,
     Extension(container): Extension<Arc<DiContainer>>,
 ) -> Result<StatusCode, ApiError> {
-    let usecase = match container.usecase_delete_article() {
-        Ok(u) => u,
-        Err(_) => {
-            return Err(ApiError {
-                status: StatusCode::INTERNAL_SERVER_ERROR,
-                description: String::from("internal_server_error"),
-            });
-        }
-    };
+    let usecase = container.usecase_delete_article();
 
-    let res = usecase.execute(&request.id);
+    let res = usecase.execute(&payload.id);
 
-    match res {
+    match res.await {
         Ok(_) => Ok(StatusCode::OK),
         Err(_) => Err(ApiError {
             status: StatusCode::BAD_REQUEST,

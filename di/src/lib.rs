@@ -1,5 +1,5 @@
 use config::Config;
-use firestore_db_and_auth::Credentials;
+use firestore::FirestoreDb;
 use infra::repository::article::ArticleDBRepository;
 use std::error::Error;
 use usecase::article::{
@@ -8,42 +8,28 @@ use usecase::article::{
 };
 
 pub struct DiContainer {
-    credentials: Credentials,
+    db: FirestoreDb,
 }
 
 impl DiContainer {
-    pub fn new(config: Config) -> Result<Self, Box<dyn Error>> {
-        let credentials_ = Credentials::from_file(config.get_credentials_src())?;
-        Ok(Self {
-            credentials: credentials_,
-        })
+    pub async fn new(config: Config) -> Result<Self, Box<dyn Error + Send + Sync + 'static>> {
+        let db = FirestoreDb::new(config.get_project_id()).await?;
+        Ok(Self { db })
     }
 
-    pub fn usecase_post_article(&self) -> Result<PostArticleUseCase, Box<dyn Error>> {
-        let usecase = PostArticleUseCase::new(Box::new(ArticleDBRepository::new(
-            self.credentials.clone(),
-        )?));
-        Ok(usecase)
+    pub fn usecase_post_article(&self) -> PostArticleUseCase {
+        PostArticleUseCase::new(Box::new(ArticleDBRepository::new(self.db.clone())))
     }
 
-    pub fn usecase_read_article(&self) -> Result<ReadArticleUseCase, Box<dyn Error>> {
-        let usecase = ReadArticleUseCase::new(Box::new(ArticleDBRepository::new(
-            self.credentials.clone(),
-        )?));
-        Ok(usecase)
+    pub fn usecase_read_article(&self) -> ReadArticleUseCase {
+        ReadArticleUseCase::new(Box::new(ArticleDBRepository::new(self.db.clone())))
     }
 
-    pub fn usecase_delete_article(&self) -> Result<DeleteArticleUseCase, Box<dyn Error>> {
-        let usecase = DeleteArticleUseCase::new(Box::new(ArticleDBRepository::new(
-            self.credentials.clone(),
-        )?));
-        Ok(usecase)
+    pub fn usecase_delete_article(&self) -> DeleteArticleUseCase {
+        DeleteArticleUseCase::new(Box::new(ArticleDBRepository::new(self.db.clone())))
     }
 
-    pub fn usecase_update_article(&self) -> Result<UpdateArticleUseCase, Box<dyn Error>> {
-        let usecase = UpdateArticleUseCase::new(Box::new(ArticleDBRepository::new(
-            self.credentials.clone(),
-        )?));
-        Ok(usecase)
+    pub fn usecase_update_article(&self) -> UpdateArticleUseCase {
+        UpdateArticleUseCase::new(Box::new(ArticleDBRepository::new(self.db.clone())))
     }
 }

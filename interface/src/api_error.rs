@@ -1,8 +1,8 @@
 use axum::{
+    http::StatusCode,
     response::{IntoResponse, Response},
     Json,
 };
-use hyper::StatusCode;
 use serde_json::json;
 
 pub struct ApiError {

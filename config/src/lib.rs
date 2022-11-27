@@ -1,22 +1,20 @@
 use std::env;
 use std::error::Error;
 
-const FIRESTORE_CREDENTIALS_SOURCE_KEY: &str = "FIRESTORE_CREDENTIALS_SOURCE";
-
 pub struct Config {
-    credentials_src: String,
+    project_id: String,
 }
 
 impl Config {
     pub fn init() -> Result<Self, Box<dyn Error>> {
         let config = Config {
-            credentials_src: env::var(FIRESTORE_CREDENTIALS_SOURCE_KEY)?,
+            project_id: env::var("PROJECT_ID")?,
         };
 
         Ok(config)
     }
 
-    pub fn get_credentials_src(&self) -> &str {
-        &self.credentials_src
+    pub fn get_project_id(&self) -> String {
+        self.project_id.clone()
     }
 }

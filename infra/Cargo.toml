@@ -8,4 +8,5 @@ edition.workspace = true
 
 [dependencies]
 domain = {path = "../domain"}
-firestore-db-and-auth = "0.6.1"
+firestore = "0.18.3"
+async-trait = "0.1.58"
