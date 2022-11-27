@@ -3,8 +3,9 @@ use firestore::FirestoreDb;
 use infra::repository::article::ArticleDBRepository;
 use std::error::Error;
 use usecase::article::{
-    delete_article::DeleteArticleUseCase, post_article::PostArticleUseCase,
-    read_article::ReadArticleUseCase, update_article::UpdateArticleUseCase,
+    delete_article::DeleteArticleUseCase, list_article::ListArticleUseCase,
+    post_article::PostArticleUseCase, read_article::ReadArticleUseCase,
+    update_article::UpdateArticleUseCase,
 };
 
 pub struct DiContainer {
@@ -31,5 +32,9 @@ impl DiContainer {
 
     pub fn usecase_update_article(&self) -> UpdateArticleUseCase {
         UpdateArticleUseCase::new(Box::new(ArticleDBRepository::new(self.db.clone())))
+    }
+
+    pub fn usecase_list_article(&self) -> ListArticleUseCase {
+        ListArticleUseCase::new(Box::new(ArticleDBRepository::new(self.db.clone())))
     }
 }

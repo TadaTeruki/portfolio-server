@@ -8,15 +8,19 @@ servers:
   - url: http://localhost:3000
 
 tags:
+    - name: utility
+      description: 各種機能のAPI
     - name: auth
     - name: article
       description: 記事を管理するAPI
+    - name: articles
+      description: 複数の記事を管理するAPI
 
 paths:
   /:
     get:
       tags:
-        - article
+        - utility
       summary: 接続を確認する
       responses:
         '200':
@@ -78,6 +82,21 @@ paths:
       responses:
         '200':
           description: OK
+  /articles:
+    get:
+      tags:
+        - articles
+      summary: 複数の記事の要約情報を取得する
+      requestBody:
+        description: Request Body
+        content:
+          application/json: 
+            schema:
+              $ref: '#/components/schemas/ListArticle'
+        required: true
+      responses:
+        '200':
+          description: OK
 
 components:
   schemas:
@@ -122,4 +141,9 @@ components:
           items:
             type: string
         is_public:
+          type: boolean
+    ListArticle:
+      type: object
+      properties:
+        only_public:
           type: boolean

@@ -2,6 +2,15 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+#[derive(Deserialize)]
+pub struct ListArticle {
+    pub title: String,
+    pub subtitle: String,
+    pub is_public: bool,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: Option<DateTime<Utc>>,
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct PostArticle {
     title: String,
@@ -11,6 +20,27 @@ pub struct PostArticle {
     is_public: bool,
     created_at: DateTime<Utc>,
     updated_at: Option<DateTime<Utc>>,
+}
+
+#[derive(Deserialize)]
+pub struct GetArticle {
+    pub title: String,
+    pub subtitle: String,
+    pub body: String,
+    pub tags: Vec<String>,
+    pub is_public: bool,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: Option<DateTime<Utc>>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct PutArticle {
+    pub title: String,
+    pub subtitle: String,
+    pub body: String,
+    pub tags: Vec<String>,
+    pub is_public: bool,
+    pub updated_at: Option<DateTime<Utc>>,
 }
 
 impl PostArticle {
@@ -35,27 +65,6 @@ impl PostArticle {
     pub fn allocate_new_uuid(&self) -> String {
         Uuid::new_v4().to_hyphenated().to_string()
     }
-}
-
-#[derive(Deserialize)]
-pub struct GetArticle {
-    pub title: String,
-    pub subtitle: String,
-    pub body: String,
-    pub tags: Vec<String>,
-    pub is_public: bool,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: Option<DateTime<Utc>>,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct PutArticle {
-    pub title: String,
-    pub subtitle: String,
-    pub body: String,
-    pub tags: Vec<String>,
-    pub is_public: bool,
-    pub updated_at: Option<DateTime<Utc>>,
 }
 
 impl PutArticle {
