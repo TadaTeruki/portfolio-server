@@ -30,8 +30,9 @@ paths:
       tags:
         - article
       summary: 記事を投稿する
+      security:
+        - Bearer: []
       requestBody:
-        description: Request Body
         content:
           application/json: 
             schema:
@@ -40,17 +41,31 @@ paths:
       responses:
         '200':
           description: OK
+  /login:
+    get:
+      tags:
+        - auth
+      summary: ownerとしてログインする
+      requestBody:
+        content:
+          application/json: 
+            schema:
+              $ref: '#/components/schemas/LoginAsOwner'
+        required: true
+      responses:
+        '200':
+          description: OK
+  /article/{articleID}:
     get:
       tags:
         - article
       summary: 記事を1つ取得する
-      requestBody:
-        description: Request Body
-        content:
-          application/json: 
-            schema:
-              $ref: '#/components/schemas/ReadArticle'
-        required: true
+      parameters:
+        - in: path
+          name: articleID
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: OK
@@ -58,13 +73,14 @@ paths:
       tags:
         - article
       summary: 記事を削除する
-      requestBody:
-        description: Request Body
-        content:
-          application/json: 
-            schema:
-              $ref: '#/components/schemas/DeleteArticle'
-        required: true
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: articleID
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: OK
@@ -72,8 +88,15 @@ paths:
       tags:
         - article
       summary: 記事を更新する
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: articleID
+          schema:
+            type: string
+          required: true
       requestBody:
-        description: Request Body
         content:
           application/json: 
             schema:
@@ -82,21 +105,17 @@ paths:
       responses:
         '200':
           description: OK
+
   /articles:
     get:
       tags:
         - articles
       summary: 複数の記事の要約情報を取得する
-      requestBody:
-        description: Request Body
-        content:
-          application/json: 
-            schema:
-              $ref: '#/components/schemas/ListArticle'
-        required: true
       responses:
         '200':
           description: OK
+      security:
+        - Bearer: []
 
 components:
   schemas:
@@ -115,21 +134,9 @@ components:
             type: string
         is_public:
           type: boolean
-    ReadArticle:
-      type: object
-      properties:
-        id:
-          type: string
-    DeleteArticle:
-      type: object
-      properties:
-        id:
-          type: string
     UpdateArticle:
       type: object
       properties:
-        id:
-          type: string
         title:
           type: string
         subtitle:
@@ -142,8 +149,14 @@ components:
             type: string
         is_public:
           type: boolean
-    ListArticle:
+    LoginAsOwner:
       type: object
       properties:
-        only_public:
-          type: boolean
+        name:
+          type: string
+        passwd:
+          type: string
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer

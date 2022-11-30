@@ -1,24 +1,27 @@
-use crate::api_error::ApiError;
-use axum::{Extension, Json};
+use crate::auth::check_authorization;
+use crate::error::ApiError;
+use axum::{extract::Path, http::HeaderMap, Extension};
 use axum_macros::debug_handler;
 use di::DiContainer;
 use hyper::StatusCode;
-use serde::Deserialize;
 use std::sync::Arc;
-
-#[derive(Deserialize)]
-pub struct DeleteArticleRequest {
-    id: String,
-}
 
 #[debug_handler]
 pub async fn delete_article(
-    Json(payload): Json<DeleteArticleRequest>,
+    headers: HeaderMap,
+    Path(id_): Path<String>,
     Extension(container): Extension<Arc<DiContainer>>,
 ) -> Result<StatusCode, ApiError> {
+    if check_authorization(headers, &container).await.is_none() {
+        return Err(ApiError {
+            status: StatusCode::UNAUTHORIZED,
+            description: String::from("not authorized"),
+        });
+    };
+
     let usecase = container.usecase_delete_article();
 
-    let res = usecase.execute(&payload.id);
+    let res = usecase.execute(&id_);
 
     match res.await {
         Ok(_) => Ok(StatusCode::OK),

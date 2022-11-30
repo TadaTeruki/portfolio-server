@@ -1,5 +1,6 @@
-use crate::api_error::ApiError;
-use axum::{Extension, Json};
+use crate::auth::check_authorization;
+use crate::error::ApiError;
+use axum::{extract::Path, http::HeaderMap, Extension, Json};
 use axum_macros::debug_handler;
 use di::DiContainer;
 use hyper::StatusCode;
@@ -8,7 +9,6 @@ use std::sync::Arc;
 
 #[derive(Deserialize)]
 pub struct UpdateArticleRequest {
-    id: String,
     title: String,
     subtitle: String,
     body: String,
@@ -18,13 +18,22 @@ pub struct UpdateArticleRequest {
 
 #[debug_handler]
 pub async fn update_article(
+    headers: HeaderMap,
+    Path(id_): Path<String>,
     Json(payload): Json<UpdateArticleRequest>,
     Extension(container): Extension<Arc<DiContainer>>,
 ) -> Result<StatusCode, ApiError> {
+    if check_authorization(headers, &container).await.is_none() {
+        return Err(ApiError {
+            status: StatusCode::UNAUTHORIZED,
+            description: String::from("not authorized"),
+        });
+    };
+
     let usecase = container.usecase_update_article();
 
     let res = usecase.execute(
-        payload.id,
+        &id_,
         payload.title,
         payload.subtitle,
         payload.body,

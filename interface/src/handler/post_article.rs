@@ -1,5 +1,6 @@
-use crate::api_error::ApiError;
-use axum::{http::StatusCode, Extension, Json};
+use crate::auth::check_authorization;
+use crate::error::ApiError;
+use axum::{http::HeaderMap, http::StatusCode, Extension, Json};
 use axum_macros::debug_handler;
 use di::DiContainer;
 use serde::{Deserialize, Serialize};
@@ -21,9 +22,17 @@ pub struct PostArticleResponse {
 
 #[debug_handler]
 pub async fn post_article(
+    headers: HeaderMap,
     Json(payload): Json<PostArticleRequest>,
     Extension(container): Extension<Arc<DiContainer>>,
 ) -> Result<Json<PostArticleResponse>, ApiError> {
+    if check_authorization(headers, &container).await.is_none() {
+        return Err(ApiError {
+            status: StatusCode::UNAUTHORIZED,
+            description: String::from("not authorized"),
+        });
+    };
+
     let usecase = container.usecase_post_article();
 
     let res = usecase.execute(
