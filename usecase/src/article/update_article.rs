@@ -14,7 +14,7 @@ impl UpdateArticleUseCase {
 
     pub async fn execute(
         &self,
-        id: String,
+        id: &str,
         title: String,
         subtitle: String,
         body: String,
@@ -22,7 +22,7 @@ impl UpdateArticleUseCase {
         is_public: bool,
     ) -> Result<(), Box<dyn Error + Send + Sync + 'static>> {
         self.repository
-            .put(&id, PutArticle::new(title, subtitle, body, tags, is_public))
+            .put(id, PutArticle::new(title, subtitle, body, tags, is_public))
             .await?;
         Ok(())
     }

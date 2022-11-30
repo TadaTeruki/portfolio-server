@@ -1,24 +1,18 @@
-use crate::api_error::ApiError;
-use axum::{Extension, Json};
+use crate::error::ApiError;
+use axum::{extract::Path, Extension};
 use axum_macros::debug_handler;
 use di::DiContainer;
 use hyper::StatusCode;
-use serde::Deserialize;
 use std::sync::Arc;
-
-#[derive(Deserialize)]
-pub struct DeleteArticleRequest {
-    id: String,
-}
 
 #[debug_handler]
 pub async fn delete_article(
-    Json(payload): Json<DeleteArticleRequest>,
+    Path(id_): Path<String>,
     Extension(container): Extension<Arc<DiContainer>>,
 ) -> Result<StatusCode, ApiError> {
     let usecase = container.usecase_delete_article();
 
-    let res = usecase.execute(&payload.id);
+    let res = usecase.execute(&id_);
 
     match res.await {
         Ok(_) => Ok(StatusCode::OK),

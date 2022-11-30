@@ -230,6 +230,7 @@ dependencies = [
  "interface",
  "log",
  "tokio",
+ "tower-http",
 ]
 
 [[package]]
@@ -340,6 +341,7 @@ version = "0.1.0"
 dependencies = [
  "async-trait",
  "chrono",
+ "jsonwebtoken",
  "serde",
  "uuid",
 ]

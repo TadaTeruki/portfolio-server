@@ -1,11 +1,14 @@
 use config::Config;
 use firestore::FirestoreDb;
-use infra::repository::article::ArticleDBRepository;
+use infra::repository::{article::ArticleDBRepository, auth::AuthDBRepository};
 use std::error::Error;
-use usecase::article::{
-    delete_article::DeleteArticleUseCase, list_article::ListArticleUseCase,
-    post_article::PostArticleUseCase, read_article::ReadArticleUseCase,
-    update_article::UpdateArticleUseCase,
+use usecase::{
+    article::{
+        delete_article::DeleteArticleUseCase, list_article::ListArticleUseCase,
+        post_article::PostArticleUseCase, read_article::ReadArticleUseCase,
+        update_article::UpdateArticleUseCase,
+    },
+    auth::check_ownership::CheckOwnershipUseCase,
 };
 
 pub struct DiContainer {
@@ -36,5 +39,9 @@ impl DiContainer {
 
     pub fn usecase_list_article(&self) -> ListArticleUseCase {
         ListArticleUseCase::new(Box::new(ArticleDBRepository::new(self.db.clone())))
+    }
+
+    pub fn usecase_check_ownership(&self) -> CheckOwnershipUseCase {
+        CheckOwnershipUseCase::new(Box::new(AuthDBRepository::new(self.db.clone())))
     }
 }
