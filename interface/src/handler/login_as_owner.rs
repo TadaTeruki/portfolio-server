@@ -22,9 +22,13 @@ pub async fn login_as_owner(
     Json(payload): Json<LoginAsOwnerRequest>,
     Extension(container): Extension<Arc<DiContainer>>,
 ) -> Result<Json<LoginAsOwnerResponse>, ApiError> {
-    let usecase = container.usecase_check_ownership();
+    let usecase = container.usecase_login_as_owner();
 
-    let res = usecase.execute(&payload.name, &payload.passwd);
+    let res = usecase.execute(
+        &payload.name,
+        &payload.passwd,
+        container.config.get_private_key(),
+    );
 
     match res.await {
         Ok(opt) => match opt {

@@ -8,17 +8,22 @@ use usecase::{
         post_article::PostArticleUseCase, read_article::ReadArticleUseCase,
         update_article::UpdateArticleUseCase,
     },
-    auth::check_ownership::CheckOwnershipUseCase,
+    auth::{check_ownership::CheckOwnershipUseCase, login_as_owner::LoginAsOwnerUseCase},
 };
 
 pub struct DiContainer {
     db: FirestoreDb,
+    pub config: Config,
 }
 
 impl DiContainer {
-    pub async fn new(config: Config) -> Result<Self, Box<dyn Error + Send + Sync + 'static>> {
-        let db = FirestoreDb::new(config.get_project_id()).await?;
-        Ok(Self { db })
+    pub async fn new() -> Result<Self, Box<dyn Error + Send + Sync + 'static>> {
+        let config_ = Config::init()?;
+        let db_ = FirestoreDb::new(config_.get_project_id()).await?;
+        Ok(Self {
+            db: db_,
+            config: config_,
+        })
     }
 
     pub fn usecase_post_article(&self) -> PostArticleUseCase {
@@ -41,7 +46,11 @@ impl DiContainer {
         ListArticleUseCase::new(Box::new(ArticleDBRepository::new(self.db.clone())))
     }
 
+    pub fn usecase_login_as_owner(&self) -> LoginAsOwnerUseCase {
+        LoginAsOwnerUseCase::new(Box::new(AuthDBRepository::new(self.db.clone())))
+    }
+
     pub fn usecase_check_ownership(&self) -> CheckOwnershipUseCase {
-        CheckOwnershipUseCase::new(Box::new(AuthDBRepository::new(self.db.clone())))
+        CheckOwnershipUseCase::new()
     }
 }

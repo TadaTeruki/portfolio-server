@@ -1,15 +1,11 @@
+use crate::auth::check_authorization;
 use crate::error::ApiError;
-use axum::{http::StatusCode, Extension, Json};
+use axum::{http::HeaderMap, http::StatusCode, Extension, Json};
 use axum_macros::debug_handler;
 use chrono::{DateTime, Utc};
 use di::DiContainer;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use std::sync::Arc;
-
-#[derive(Deserialize)]
-pub struct ListArticleRequest {
-    only_public: bool,
-}
 
 #[derive(Serialize)]
 pub struct ListArticle {
@@ -27,12 +23,14 @@ pub struct ListArticleResponse {
 
 #[debug_handler]
 pub async fn list_article(
-    Json(payload): Json<ListArticleRequest>,
+    headers: HeaderMap,
     Extension(container): Extension<Arc<DiContainer>>,
 ) -> Result<Json<ListArticleResponse>, ApiError> {
+    let only_public = check_authorization(headers, &container).await.is_none();
+
     let usecase = container.usecase_list_article();
 
-    let res = usecase.execute(payload.only_public);
+    let res = usecase.execute(only_public);
 
     match res.await {
         Ok(raws_) => {

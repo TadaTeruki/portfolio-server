@@ -1,34 +1,28 @@
-use domain::{model::auth::Ownership, repository::auth::AuthRepository};
+pub struct CheckOwnershipUseCase {}
+use domain::model::auth::{JwtClaims, Ownership};
 use std::error::Error;
 
-pub struct CheckOwnershipUseCase {
-    repository: Box<dyn AuthRepository + Send + Sync>,
-}
-
 impl CheckOwnershipUseCase {
-    pub fn new(repository_: Box<dyn AuthRepository + Send + Sync>) -> Self {
-        Self {
-            repository: repository_,
-        }
+    pub fn new() -> Self {
+        Self {}
     }
 
     pub async fn execute(
         &self,
-        name: &str,
-        passwd_: &str,
-    ) -> Result<Option<Ownership>, Box<dyn Error + Send + Sync + 'static>> {
-        let identify = self.repository.query_identification(name).await?;
+        header_token: &str,
+        private_key: &str,
+    ) -> Result<JwtClaims, Box<dyn Error + Send + Sync + 'static>> {
+        let ownership = Ownership {
+            token: header_token.to_string(),
+        };
 
-        match identify {
-            Some(passwd) => {
-                if passwd.passwd == passwd_ {
-                    let res = Ownership::new(name).await?;
-                    Ok(Some(res))
-                } else {
-                    Ok(None)
-                }
-            }
-            None => Ok(None),
-        }
+        let res = ownership.decode(private_key).await?;
+        Ok(res)
+    }
+}
+
+impl Default for CheckOwnershipUseCase {
+    fn default() -> Self {
+        Self::new()
     }
 }

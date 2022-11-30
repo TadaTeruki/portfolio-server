@@ -30,6 +30,8 @@ paths:
       tags:
         - article
       summary: 記事を投稿する
+      security:
+        - Bearer: []
       requestBody:
         content:
           application/json: 
@@ -71,6 +73,8 @@ paths:
       tags:
         - article
       summary: 記事を削除する
+      security:
+        - Bearer: []
       parameters:
         - in: path
           name: articleID
@@ -84,6 +88,8 @@ paths:
       tags:
         - article
       summary: 記事を更新する
+      security:
+        - Bearer: []
       parameters:
         - in: path
           name: articleID
@@ -105,15 +111,11 @@ paths:
       tags:
         - articles
       summary: 複数の記事の要約情報を取得する
-      requestBody:
-        content:
-          application/json: 
-            schema:
-              $ref: '#/components/schemas/ListArticle'
-        required: true
       responses:
         '200':
           description: OK
+      security:
+        - Bearer: []
 
 components:
   schemas:
@@ -154,8 +156,7 @@ components:
           type: string
         passwd:
           type: string
-    ListArticle:
-      type: object
-      properties:
-        only_public:
-          type: boolean
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer

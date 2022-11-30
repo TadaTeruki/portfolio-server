@@ -1,9 +1,8 @@
 use axum::{
+    http::Method,
     routing::{delete, get, post, put},
     Extension, Router,
-    http::Method,
 };
-use config::Config;
 use di::DiContainer;
 use interface::handler;
 use log::{error, info};
@@ -18,15 +17,7 @@ async fn main() {
         .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
         .allow_origin(Any);
 
-    let config = match Config::init() {
-        Ok(conf) => conf,
-        Err(err) => {
-            error!("server aborted: {}", err);
-            return;
-        }
-    };
-
-    let article_provider = Arc::new(match DiContainer::new(config).await {
+    let article_provider = Arc::new(match DiContainer::new().await {
         Ok(cont) => cont,
         Err(err) => {
             error!("server aborted: {}", err);
@@ -34,14 +25,17 @@ async fn main() {
         }
     });
 
+    let article_route = Router::new()
+        .route("/", post(handler::post_article::post_article))
+        .route("/:id", get(handler::read_article::read_article))
+        .route("/:id", delete(handler::delete_article::delete_article))
+        .route("/:id", put(handler::update_article::update_article));
+
     let app = Router::new()
         .route("/", get(handler::check_health::check_health))
         .route("/login", get(handler::login_as_owner::login_as_owner))
-        .route("/article", post(handler::post_article::post_article))
-        .route("/article/:id", get(handler::read_article::read_article))
-        .route("/article/:id", delete(handler::delete_article::delete_article))
-        .route("/article/:id", put(handler::update_article::update_article))
         .route("/articles", get(handler::list_article::list_article))
+        .nest("/article", article_route)
         .layer(Extension(article_provider))
         .layer(cors);
 
