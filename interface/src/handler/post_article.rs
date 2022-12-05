@@ -1,4 +1,4 @@
-use crate::auth::check_authorization;
+use crate::auth::has_authorization;
 use crate::error::ApiError;
 use axum::{http::HeaderMap, http::StatusCode, Extension, Json};
 use axum_macros::debug_handler;
@@ -26,7 +26,7 @@ pub async fn post_article(
     Json(payload): Json<PostArticleRequest>,
     Extension(container): Extension<Arc<DiContainer>>,
 ) -> Result<Json<PostArticleResponse>, ApiError> {
-    if check_authorization(headers, &container).await.is_none() {
+    if has_authorization(headers, &container).await.is_none() {
         return Err(ApiError {
             status: StatusCode::UNAUTHORIZED,
             description: String::from("not authorized"),

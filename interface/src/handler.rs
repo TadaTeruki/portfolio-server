@@ -1,3 +1,4 @@
+pub mod check_authorization;
 pub mod check_health;
 pub mod delete_article;
 pub mod list_article;

@@ -1,4 +1,4 @@
-use crate::auth::check_authorization;
+use crate::auth::has_authorization;
 use crate::error::ApiError;
 use axum::{extract::Path, http::HeaderMap, Extension};
 use axum_macros::debug_handler;
@@ -12,7 +12,7 @@ pub async fn delete_article(
     Path(id_): Path<String>,
     Extension(container): Extension<Arc<DiContainer>>,
 ) -> Result<StatusCode, ApiError> {
-    if check_authorization(headers, &container).await.is_none() {
+    if has_authorization(headers, &container).await.is_none() {
         return Err(ApiError {
             status: StatusCode::UNAUTHORIZED,
             description: String::from("not authorized"),

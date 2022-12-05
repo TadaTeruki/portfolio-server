@@ -24,18 +24,16 @@ impl ArticleRepository for ArticleDBRepository {
         &self,
         article: PostArticle,
     ) -> Result<String, Box<dyn Error + Send + Sync + 'static>> {
-        let id = article.allocate_new_uuid();
-
         self.db
             .fluent()
             .insert()
             .into("articles")
-            .document_id(id.clone())
+            .document_id(article.id.clone())
             .object(&article)
             .execute()
             .await?;
 
-        Ok(id)
+        Ok(article.id)
     }
 
     async fn put(
@@ -50,6 +48,7 @@ impl ArticleRepository for ArticleDBRepository {
                 title,
                 subtitle,
                 tags,
+                body,
                 is_public,
                 updated_at
             }))
@@ -93,7 +92,9 @@ impl ArticleRepository for ArticleDBRepository {
             .db
             .fluent()
             .select()
-            .fields(paths!(ListArticle::{title, subtitle, is_public, created_at, updated_at}))
+            .fields(
+                paths!(ListArticle::{id, title, subtitle, tags, is_public, created_at, updated_at}),
+            )
             .from("articles")
             .order_by([(
                 path!(ListArticle::created_at),
@@ -114,7 +115,9 @@ impl ArticleRepository for ArticleDBRepository {
             .db
             .fluent()
             .select()
-            .fields(paths!(ListArticle::{title, subtitle, is_public, created_at, updated_at}))
+            .fields(
+                paths!(ListArticle::{id, title, subtitle, tags, is_public, created_at, updated_at}),
+            )
             .from("articles")
             .filter(|q| q.for_all([q.field(path!(ListArticle::is_public)).eq(true)]))
             .order_by([(

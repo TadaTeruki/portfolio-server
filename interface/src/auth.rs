@@ -2,11 +2,8 @@ use axum::http::HeaderMap;
 use di::DiContainer;
 use std::sync::Arc;
 
-pub async fn check_authorization(
-    headers: HeaderMap,
-    container: &Arc<DiContainer>,
-) -> Option<String> {
-    if !headers.contains_key("Authorization") {
+pub async fn has_authorization(headers: HeaderMap, container: &Arc<DiContainer>) -> Option<String> {
+    if !headers.contains_key("Authorization") || headers["Authorization"].len() < 7 {
         return None;
     }
 

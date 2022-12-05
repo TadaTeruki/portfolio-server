@@ -15,6 +15,7 @@ async fn main() {
 
     let cors = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
+        .allow_headers(Any)
         .allow_origin(Any);
 
     let article_provider = Arc::new(match DiContainer::new().await {
@@ -33,7 +34,11 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(handler::check_health::check_health))
-        .route("/login", get(handler::login_as_owner::login_as_owner))
+        .route("/login", post(handler::login_as_owner::login_as_owner))
+        .route(
+            "/auth",
+            get(handler::check_authorization::check_authorization),
+        )
         .route("/articles", get(handler::list_article::list_article))
         .nest("/article", article_route)
         .layer(Extension(article_provider))

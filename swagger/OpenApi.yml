@@ -42,7 +42,7 @@ paths:
         '200':
           description: OK
   /login:
-    get:
+    post:
       tags:
         - auth
       summary: ownerとしてログインする

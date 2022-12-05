@@ -14,6 +14,7 @@ pub struct ReadArticleResponse {
     subtitle: String,
     body: String,
     tags: Vec<String>,
+    is_public: bool,
     created_at: DateTime<Utc>,
     updated_at: Option<DateTime<Utc>>,
 }
@@ -35,6 +36,7 @@ pub async fn read_article(
                 subtitle: article.subtitle,
                 body: article.body,
                 tags: article.tags,
+                is_public: article.is_public,
                 created_at: article.created_at,
                 updated_at: article.updated_at,
             })),
