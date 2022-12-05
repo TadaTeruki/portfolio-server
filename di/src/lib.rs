@@ -17,8 +17,7 @@ pub struct DiContainer {
 }
 
 impl DiContainer {
-    pub async fn new() -> Result<Self, Box<dyn Error + Send + Sync + 'static>> {
-        let config_ = Config::init()?;
+    pub async fn new(config_: Config) -> Result<Self, Box<dyn Error + Send + Sync + 'static>> {
         let db_ = FirestoreDb::new(config_.get_project_id()).await?;
         Ok(Self {
             db: db_,

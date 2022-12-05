@@ -3,9 +3,10 @@ use axum::{
     routing::{delete, get, post, put},
     Extension, Router,
 };
+use config::Config;
 use di::DiContainer;
 use interface::handler;
-use log::{error, info};
+use log::error;
 use std::{net::SocketAddr, sync::Arc};
 use tower_http::cors::{Any, CorsLayer};
 
@@ -18,7 +19,9 @@ async fn main() {
         .allow_headers(Any)
         .allow_origin(Any);
 
-    let article_provider = Arc::new(match DiContainer::new().await {
+    let config = Config::init().expect("server aborted: could not find configs");
+
+    let article_provider = Arc::new(match DiContainer::new(config.clone()).await {
         Ok(cont) => cont,
         Err(err) => {
             error!("server aborted: {}", err);
@@ -44,9 +47,15 @@ async fn main() {
         .layer(Extension(article_provider))
         .layer(cors);
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let addr = SocketAddr::from((
+        match config.is_release_mode() {
+            true => [0, 0, 0, 0],
+            false => [127, 0, 0, 1],
+        },
+        config.get_port(),
+    ));
 
-    info!("listening on {}", addr);
+    println!("listening on {}", addr);
 
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
