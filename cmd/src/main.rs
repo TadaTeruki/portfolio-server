@@ -14,12 +14,14 @@ use tower_http::cors::{Any, CorsLayer};
 async fn main() {
     env_logger::init();
 
+    let config = Config::init().expect("server aborted: config file must be set");
+
     let cors = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
         .allow_headers(Any)
-        .allow_origin(Any);
-
-    let config = Config::init().expect("server aborted: could not find configs");
+        .allow_origin([config.get_allow_origin().parse().expect(
+            "server aborted: an error occured while parsing Access-Control-Allow-Origin value",
+        )]);
 
     let article_provider = Arc::new(match DiContainer::new(config.clone()).await {
         Ok(cont) => cont,
