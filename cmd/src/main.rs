@@ -16,12 +16,22 @@ async fn main() {
 
     let config = Config::init().expect("server aborted: config file must be set");
 
-    let cors = CorsLayer::new()
-        .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
-        .allow_headers(Any)
-        .allow_origin([config.get_allow_origin().parse().expect(
-            "server aborted: an error occured while parsing Access-Control-Allow-Origin value",
-        )]);
+    let allow_methods = [Method::GET, Method::POST, Method::PUT, Method::DELETE];
+    let allow_headers = Any;
+    let allow_origin = config.get_allow_origin();
+
+    let cors = match allow_origin == "ANY" {
+        true => CorsLayer::new()
+            .allow_methods(allow_methods)
+            .allow_headers(allow_headers)
+            .allow_origin(Any),
+        false => CorsLayer::new()
+            .allow_methods(allow_methods)
+            .allow_headers(allow_headers)
+            .allow_origin([config.get_allow_origin().parse().expect(
+                "server aborted: an error occured while parsing Access-Control-Allow-Origin value",
+            )]),
+    };
 
     let article_provider = Arc::new(match DiContainer::new(config.clone()).await {
         Ok(cont) => cont,
