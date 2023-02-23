@@ -17,12 +17,15 @@ impl PostArticleUseCase {
         title: String,
         subtitle: String,
         body: String,
+        thumbnail: String,
         tags: Vec<String>,
         is_public: bool,
     ) -> Result<String, Box<dyn Error + Send + Sync + 'static>> {
         let res = self
             .repository
-            .insert(PostArticle::new(title, subtitle, body, tags, is_public))
+            .insert(PostArticle::new(
+                title, subtitle, body, thumbnail, tags, is_public,
+            ))
             .await?;
         Ok(res)
     }

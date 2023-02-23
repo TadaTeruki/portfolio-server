@@ -49,6 +49,7 @@ impl ArticleRepository for ArticleDBRepository {
                 subtitle,
                 tags,
                 body,
+                thumbnail,
                 is_public,
                 updated_at
             }))
@@ -93,7 +94,7 @@ impl ArticleRepository for ArticleDBRepository {
             .fluent()
             .select()
             .fields(
-                paths!(ListArticle::{id, title, subtitle, tags, is_public, created_at, updated_at}),
+                paths!(ListArticle::{id, title, subtitle, thumbnail, tags, is_public, created_at, updated_at}),
             )
             .from("articles")
             .order_by([(
@@ -116,7 +117,7 @@ impl ArticleRepository for ArticleDBRepository {
             .fluent()
             .select()
             .fields(
-                paths!(ListArticle::{id, title, subtitle, tags, is_public, created_at, updated_at}),
+                paths!(ListArticle::{id, title, subtitle, tags, thumbnail, is_public, created_at, updated_at}),
             )
             .from("articles")
             .filter(|q| q.for_all([q.field(path!(ListArticle::is_public)).eq(true)]))

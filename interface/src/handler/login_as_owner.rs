@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 #[derive(Deserialize)]
 pub struct LoginAsOwnerRequest {
-    name: String,
+    owner_id: String,
     passwd: String,
 }
 
@@ -25,7 +25,7 @@ pub async fn login_as_owner(
     let usecase = container.usecase_login_as_owner();
 
     let res = usecase.execute(
-        &payload.name,
+        &payload.owner_id,
         &payload.passwd,
         container.config.get_private_key(),
     );

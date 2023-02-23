@@ -6,6 +6,6 @@ use std::error::Error;
 pub trait AuthRepository {
     async fn query_identification(
         &self,
-        name: &str,
+        owner_id: &str,
     ) -> Result<Option<QueryIdentification>, Box<dyn Error + Send + Sync + 'static>>;
 }

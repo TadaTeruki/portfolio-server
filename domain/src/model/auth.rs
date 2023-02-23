@@ -58,13 +58,3 @@ impl Ownership {
         }
     }
 }
-
-/*
-use jsonwebtoken::{TokenData, DecodingKey, Validation, decode};
-fn decode_jwt(jwt: &str, secret: &str) -> Result<TokenData<Claims>, jsonwebtoken::errors::Error> {
-    let secret = std::env::var(secret).expect("secret is not set");
-    decode::<Claims>(
-        jwt, &DecodingKey::from_secret(secret.as_ref()),
-        &Validation::default())
-}
-*/

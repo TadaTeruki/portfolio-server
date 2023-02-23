@@ -14,11 +14,11 @@ impl LoginAsOwnerUseCase {
 
     pub async fn execute(
         &self,
-        name: &str,
+        owner_id_: &str,
         passwd_: &str,
         private_key: &str,
     ) -> Result<Option<Ownership>, Box<dyn Error + Send + Sync + 'static>> {
-        let identify = self.repository.query_identification(name).await?;
+        let identify = self.repository.query_identification(owner_id_).await?;
 
         match identify {
             Some(owner_data) => {

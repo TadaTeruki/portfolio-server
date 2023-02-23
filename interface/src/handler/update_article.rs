@@ -12,6 +12,7 @@ pub struct UpdateArticleRequest {
     title: String,
     subtitle: String,
     body: String,
+    thumbnail: String,
     tags: Vec<String>,
     is_public: bool,
 }
@@ -37,6 +38,7 @@ pub async fn update_article(
         payload.title,
         payload.subtitle,
         payload.body,
+        payload.thumbnail,
         payload.tags,
         payload.is_public,
     );
