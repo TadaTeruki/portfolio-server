@@ -5,20 +5,20 @@ pub async fn check_health() -> impl IntoResponse {
     (
         StatusCode::OK,
         "
-    .                                     Peruki@future-university-hakodate
-   ##########==  =#                       ---------------------------------
-    ##===####==###==#==.                  Name: Teruki TADA
-    ##==####==##        ===               Local Name: 多田 瑛貴
-     ########=             #=             Location: Hakodate, Japan
-      ####=            ##   .#.           Affiliation: School of System Information Science,
-       #         ##    ##     #                        Future University Hakodate
-       #         ##         .#=           Twitter: @PerukiFUN
-       =#               ====              GitHub: TadaTeruki
-         =====.    ====                   Major Programming Language: Go
-        =#=#########.                     Programming Languages: C, C++, Go, (Rust)
-      #######=######=                     Major Fields: Procedural Generation (CG)
-         ===  #     =                                   Backend Web Development
-                                          Server: OK
+                                         Peruki@future-university-hakodate
+   .                                     ---------------------------------
+  ##########==  =#                       Name: Teruki TADA
+   ##===####==###==#==.                  Shell: Japanese
+   ##==####==##        ===               Location: Hakodate, Japan
+    ########=             #=             Affiliation: Future University Hakodate
+     ####=            ##   .#.           Twitter: @PerukiFUN
+      #         ##    ##     #           GitHub: TadaTeruki
+      #         ##         .#=           Main Language: Go
+      =#               ====              Supported Languages: C, C++, Go, Rust, JS/TS
+        =====.    ====                   Fields: Landscape Evolution Model
+       =#=#########.                           : Backend Web Development
+     #######=######=                           : Community Management
+        ===  #     =                     Server: OK
 ",
     )
 }
