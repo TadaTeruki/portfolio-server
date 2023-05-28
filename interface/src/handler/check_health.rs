@@ -18,7 +18,7 @@ pub async fn check_health() -> impl IntoResponse {
         =====.    ====                   Fields: Landscape Evolution Model
        =#=#########.                           : Backend Web Development
      #######=######=                           : Community Management
-        ===  #     =                     Server: OK
+        ===  #     =                     Website: https://portfolio.peruki.dev      
 ",
     )
 }
