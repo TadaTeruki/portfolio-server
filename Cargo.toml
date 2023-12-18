@@ -1,5 +1,6 @@
 [workspace]
 members = [ "cmd", "interface", "usecase", "domain", "infra", "di", "config" ]
+resolver = "2"
 
 [workspace.package]
 version = "0.1.0"
